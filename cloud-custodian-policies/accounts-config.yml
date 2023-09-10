@@ -1,0 +1,31 @@
+- account_id: "account_id"
+  account_name: account_alias
+  policy_source_paths:
+    - common
+  assume_role:
+    duration_seconds: 7200
+    role_arn: arn:aws:iam::account_id:role/OrganizationAccountAccessRole
+  role_arn: arn:aws:iam::account_id:role/cloud-custodian-lambda
+  regions:
+    - eu-west-1
+  output_s3_bucket_name: cloudcustodian-account_id-account_alias
+  custodian_log_group: /cloud-custodian/lambda
+  # ARN of the Dead Letter Queue for the c7n Lambda functions
+  dead_letter_queue_arn: arn:aws:sqs:eu-west-1:account_id:sre-dead-letter-cloudCustodian
+  mailer_regions:
+    - eu-west-1
+  mailer_config:
+    queue_url: https://sqs.eu-west-1.amazonaws.com/account_id/sre-cloudCustodian
+    role: arn:aws:iam::account_id:role/cloud-custodian-lambda
+    region: "%%AWS_REGION%%"
+    dead_letter_config:
+      TargetArn: arn:aws:sqs:eu-west-1:account_id:sre-dead-letter-cloudCustodian
+    contact_tags:
+      - pooc@example.com
+    # Lambda Config
+    memory: 1024
+    lambda_tags:
+      "Name": "cloud-custodian"
+      "environment": "prod"
+      "managedBy": "cloud-custodian"
+
